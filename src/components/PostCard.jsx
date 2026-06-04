@@ -7,14 +7,14 @@ import { Link } from 'react-router-dom'
 // note- in appwrite variable id is written as '$id'
 
 // joh bhi iss PostCard ko call kr rha hai. woh id toh de hi rha hai hume
-function PostCard({$id, title, featureImage}) {
+function PostCard({$id, title, featuredImage}) {
   
     return (
         <Link to={`/post/${$id}`}>
             <div className='w-full bg-gray-50 rounded-xl p-4'>
                 <div className='w-full justify-center mb-4'>
                     <img 
-                    src={StorageClass.getFilePreview(featureImage)} alt={title}  // featuredimg id is same as entire post id ie. $id
+                    src={StorageClass.getFilePreview(featuredImage)} alt={title}  // featuredimg id is same as entire post id ie. $id
                     className='rounded-xl' />
                 </div>
                 <h2 

@@ -7,13 +7,24 @@ import { useNavigate } from 'react-router-dom'
 
 function PostForm({post}) {
     const {register, handleSubmit, watch, setValue, control, getValues} = useForm({
-        defaultValues : {
-            title : post?.title || "",
-            slug : post?.slug || "",
-            content : post?.content || "",
-            status : post?.status || "active",
+        defaultValues: {
+            title: post?.title || "",
+            slug: post?.$id || "",        
+            content: post?.content || "",
+            status: post?.status || "active",
         },
     })
+
+    
+    useEffect(() => {
+        if(post) {
+            setValue('title', post.title)
+            setValue('slug', post.$id)
+            setValue('content', post.content)
+            setValue('status', post.status)
+        }
+    }, [post, setValue])
+
     const navigate = useNavigate()
     const userData = useSelector(state => state.auth.userData)
     const submit = async (data) => {
@@ -31,6 +42,7 @@ function PostForm({post}) {
                 navigate(`/post/${dbPost.$id}`)
             }
         }else {
+            try {
                 // todo
                 const fileUpload = await appwriteService.uploadFile(data.image[0])
 
@@ -39,12 +51,16 @@ function PostForm({post}) {
                     data.featuredImage = fileUploadId
                     const dbPost = await appwriteService.createPost({
                         ...data,
-                        userId : userData.$id,
+                        userid : userData.$id,
                     })
                     if(dbPost) {
                         navigate(`/post/${dbPost.$id}`)
                     }
                 }
+                
+            } catch (error) {
+                console.error("Error creating post:", error);
+            }
             }
         }
 
@@ -97,7 +113,7 @@ function PostForm({post}) {
                     accept="image/png, image/jpg, image/jpeg, image/gif"
                     {...register("image", { required: !post })}
                 />
-                {post && (
+                {post && post.featuredImage && (
                     <div className="w-full mb-4">
                         <img
                             src={appwriteService.getFilePreview(post.featuredImage)}

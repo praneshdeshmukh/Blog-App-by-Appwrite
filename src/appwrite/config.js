@@ -19,14 +19,14 @@ export class StorageClass {
         }
         
         // .createRow('[DATABASE_IT]', '[TABLE_ID]', '[ROW_ID]', {DATA})
-    async createPost({title, slug, content, featuredImage, status, userId}) {
+    async createPost({title, slug, content, featuredImage, status, userid}) {
        // slug == rowId
         try {
             // return await this.databases.createRow(
             //     conf.appwriteDatabaseId,
             //     conf.appwriteTableId,
             //     slug,
-            await this.databases.createRow({
+            return await this.databases.createRow({
             databaseId: conf.appwriteDatabaseId,
             tableId: conf.appwriteTableId,
             rowId: slug,
@@ -35,7 +35,7 @@ export class StorageClass {
                 content,
                 featuredImage,
                 status,
-                userId
+                userid
             }
         })
         } catch (error) {
@@ -46,6 +46,10 @@ export class StorageClass {
 
     async updatePost(slug, {title, content, featuredImage, status}) {
         try {
+            const data = {title, content, status}
+            if(featuredImage) {
+                data.featuredImage = featuredImage
+            }
             return await this.databases.updateRow(
                 conf.appwriteDatabaseId,
                 conf.appwriteTableId,
@@ -136,7 +140,7 @@ export class StorageClass {
         //     ID.unique(),
         //     file
             // document.getElementById('uploader').files[0]
-            await this.bucket.createFile({
+            return await this.bucket.createFile({
             bucketId: conf.appwriteBucketId,
             fileId: ID.unique(),
             file: file
@@ -164,10 +168,10 @@ export class StorageClass {
     getFilePreview(fileId) {  // no need of async-await as it doesnt return a promise
         // this func will return a url
         try {
-            return this.bucket.getFileView(
-                conf.appwriteBucketId,
-                fileId
-            )
+            return this.bucket.getFileView({
+            bucketId: conf.appwriteBucketId,
+            fileId: fileId
+        })
         } catch (error) {
             console.error("get file preview: ", error);
         }
