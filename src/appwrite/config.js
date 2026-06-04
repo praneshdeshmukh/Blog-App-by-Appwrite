@@ -1,11 +1,11 @@
 /// CREATE SERVICES
-
+// import { Databases } from 'appwrite'
 import conf from '../conf/conf.js'
 import {Client, ID, TablesDB, Storage, Query} from 'appwrite'
 
 
 export class StorageClass {
-    client = new Client;
+    client = new Client();
     databases;
     bucket;
 
@@ -22,19 +22,22 @@ export class StorageClass {
     async createPost({title, slug, content, featuredImage, status, userId}) {
        // slug == rowId
         try {
-            return await this.databases.createRow(
-                conf.appwriteDatabaseId,
-                conf.appwriteTableId,
-                slug,
-                {
-                    title,
-                    content,
-                    featuredImage,
-                    status,
-                    userId
-                }
-
-            ) 
+            // return await this.databases.createRow(
+            //     conf.appwriteDatabaseId,
+            //     conf.appwriteTableId,
+            //     slug,
+            await this.databases.createRow({
+            databaseId: conf.appwriteDatabaseId,
+            tableId: conf.appwriteTableId,
+            rowId: slug,
+            data: {
+                title,
+                content,
+                featuredImage,
+                status,
+                userId
+            }
+        })
         } catch (error) {
            console.error("create post: ",error);
             
@@ -90,29 +93,55 @@ export class StorageClass {
     }
     
     // get all posts having status 'active'
+    // async getPosts() {
+    //     try {
+    //         return await this.databases.listRows(
+    //             conf.appwriteDatabaseId,
+    //             conf.appwriteTableId,
+    //             [
+    //                 Query.equal("status", "active")
+    //             ]
+    //         )
+    //     } catch (error) {
+    //         console.error("getPosts: ", error); 
+    //     }
+    // }
     async getPosts() {
-        try {
-            return await this.databases.listRows(
-                conf.appwriteDatabaseId,
-                conf.appwriteTableId,
-                [
-                    Query.equal("status", "active")
-                ]
+    try {
+        console.log(
+         await this.databases.listRows(
+            conf.appwriteDatabaseId,
+            conf.appwriteTableId,
+            // [
+            //     Query.equal("status", "active")
+            // ]
             )
+        )
+        return await this.databases.listRows(
+            conf.appwriteDatabaseId,
+            conf.appwriteTableId,
+            [
+                Query.equal("status", "active")
+            ]
+        )
         } catch (error) {
-            console.error("getPosts: ", error); 
+            console.error(error);
         }
-    }
-
+    }   
     // file upload service
     async uploadFile(file) {
         try {
-           await this.bucket.createFile(
-            conf.appwriteBucketId,
-            ID.unique(),
-            file
+        //    return await this.bucket.createFile(
+        //     conf.appwriteBucketId,
+        //     ID.unique(),
+        //     file
             // document.getElementById('uploader').files[0]
-           ) 
+            await this.bucket.createFile({
+            bucketId: conf.appwriteBucketId,
+            fileId: ID.unique(),
+            file: file
+        })   
+        
         } catch (error) {
             console.error("upload file: ", error);
             
@@ -133,8 +162,9 @@ export class StorageClass {
     }
 
     getFilePreview(fileId) {  // no need of async-await as it doesnt return a promise
+        // this func will return a url
         try {
-            this.bucket.getFilePreview(
+            return this.bucket.getFileView(
                 conf.appwriteBucketId,
                 fileId
             )
@@ -144,4 +174,5 @@ export class StorageClass {
     }
 }
 
-export default StorageClass;
+const service = new StorageClass()
+export default service

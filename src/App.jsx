@@ -13,10 +13,15 @@ function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    authService.getUserStatus()
-      .then((userData) => {
+    authService.getUserStatus().then((userData) => {      
         if(userData) {
-          dispatch(login({userData}))
+          dispatch(login({userData : {
+            $id : userData.$id,
+            // name : userData.name,
+            email : userData.email,
+            password: userData.password
+
+          }}))
         }
         else {
           dispatch(logout())
@@ -25,27 +30,39 @@ function App() {
       .finally(() => setLoading(false))
   },[])
 
+  // useEffect(() => {
+  //   authService.getCurrentUser()
+  //   .then((userData) => {
+  //     if (userData) {
+  //       dispatch(login({userData}))
+  //     } else {
+  //       dispatch(logout())
+  //     }
+  //   })
+  //   .finally(() => setLoading(false))
+  // }, [])
+
   return !loading ? 
   ( 
     <div className='min-h-screen flex flex-col items-center bg-gray-400'>
       <div className='flex-1 w-full text-center'>
         <Header/>
         <main>
-          TODO : {/* <Outlet/> */}
+          TODO : <Outlet/>
         </main>
         <Footer/>
       </div>
    </div>
   )
-  // : null
-  : (
+  : null
+  // : (
     
-  <div className="fixed inset-0 flex flex-col items-center justify-center bg-white gap-4">
-    <div className="w-10 h-10 rounded-full border-4 border-gray-200 border-t-green-600 animate-spin" />
-    <p className="text-sm font-medium tracking-widest text-gray-400 uppercase">Loading...</p>
-  </div>
+  // <div className="fixed inset-0 flex flex-col items-center justify-center bg-white gap-4">
+  //   <div className="w-10 h-10 rounded-full border-4 border-gray-200 border-t-green-600 animate-spin" />
+  //   <p className="text-sm font-medium tracking-widest text-gray-400 uppercase">Loading...</p>
+  // </div>
     
-    )
+  //   )
 }
 
 export default App

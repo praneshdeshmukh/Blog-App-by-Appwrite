@@ -27,7 +27,7 @@ export class AuthService {
             throw error;
         }
     }
-
+    
     async login( {email, password} ) {
         // eslint-disable-next-line no-useless-catch
         try {
