@@ -20,11 +20,6 @@ function Header() {
       active : !authStatus
     },
     {
-      name : "Logout",
-      slug : "/logout",
-      active : !authStatus,
-    },
-    {
       name : "Signup",
       slug : "/signup",
       active : !authStatus
@@ -61,12 +56,12 @@ function Header() {
               </li>
             ) : null
           )}
-
-        {authStatus && (
+        
+        {authStatus ? (
           <li>
             <LogoutBtn/>
           </li>
-        )}
+        ) : null}
 
         </ul>
       </nav>
